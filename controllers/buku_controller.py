@@ -1,3 +1,4 @@
+
 #Sifa_007
 import tkinter.messagebox as messagebox
 from models.buku_model import BukuModel
@@ -100,10 +101,44 @@ class BukuController:
             )
             return
 
-        messagebox.showinfo(
-            "Informasi",
-            "Method Update akan disesuaikan dengan BukuModel."
+        selected = self.view.tabel.selection()
+
+        if not selected:
+            messagebox.showwarning(
+                "Peringatan",
+                "Pilih data buku yang ingin diperbarui!"
+            )
+            return
+
+        item = self.view.tabel.item(selected[0])
+        id_buku = item["values"][0]
+
+        judul = self.view.entry_judul.get()
+        penulis = self.view.entry_penulis.get()
+        tahun = self.view.entry_tahun.get()
+
+        if not judul or not penulis or not tahun:
+            messagebox.showwarning(
+                "Peringatan",
+                "Semua kolom harus diisi!"
+            )
+            return
+
+        berhasil = self.model.update_buku(
+            id_buku, judul, penulis, tahun
         )
+
+        if berhasil:
+            messagebox.showinfo(
+                "Sukses",
+                "Data buku berhasil diperbarui!"
+            )
+            self.muat_data_tabel()
+        else:
+            messagebox.showerror(
+                "Error",
+                "Gagal memperbarui data buku."
+            )
 
     # TAMBAHAN: Fungsi Hapus
     def hapus_data(self):
@@ -114,10 +149,37 @@ class BukuController:
             )
             return
 
-        messagebox.showinfo(
-            "Informasi",
-            "Method Hapus akan disesuaikan dengan BukuModel."
+        selected = self.view.tabel.selection()
+
+        if not selected:
+            messagebox.showwarning(
+                "Peringatan",
+                "Pilih data buku yang ingin dihapus!"
+            )
+            return
+
+        item = self.view.tabel.item(selected[0])
+        id_buku = item["values"][0]
+
+        konfirmasi = messagebox.askyesno(
+            "Konfirmasi Hapus",
+            "Apakah Anda yakin ingin menghapus data buku ini?"
         )
+
+        if konfirmasi:
+            berhasil = self.model.delete_buku(id_buku)
+
+            if berhasil:
+                messagebox.showinfo(
+                    "Sukses",
+                    "Data buku berhasil dihapus!"
+                )
+                self.muat_data_tabel()
+            else:
+                messagebox.showerror(
+                    "Error",
+                    "Gagal menghapus data buku."
+                )
 
     # TAMBAHAN: Fungsi Logout
     def logout(self):
